@@ -1,26 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react'
 import './App.css';
+import Title from './Components/Title'
+import Form from './Components/Form'
+import Weather from './Components/Weather'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  state = {
+    temp : undefined, 
+    windDirection : undefined,
+    weatherState : undefined, 
+    humidity : undefined, 
+    id: undefined
 }
 
-export default App;
+
+getWeather = async ( e ) => {
+    e.preventDefault();
+    const location = e.target.elements.location.value;
+    const apiCall = await fetch(`https://www.metaweather.com/api/location/search/?query=${location}`)
+    const data = await apiCall.json();
+    console.log(data);
+}
+
+
+  render() {
+    return (
+      <div className="App">
+        <Title />
+  
+        <Form  getWeather={this.getWeather}/>
+  
+        <Weather />
+      </div>
+    )
+  }
+}
+
+export default App
+
