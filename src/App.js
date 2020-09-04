@@ -7,43 +7,65 @@ import Weather from './Components/Weather'
 class App extends Component {
 
   state = {
-    temp : undefined, 
-    windDirection : undefined,
-    weatherState : undefined, 
-    humidity : undefined, 
-    error: undefined
+    //loading: false,
+    temp : '', 
+    windDirection : '',
+    weatherState : '', 
+    humidity : 0, 
+    error: ''
 }
 
+/*handleLoad = (location) =>{
+  if (location != ''){
+    this.setState({
+      loading: true
+    })
+  }
 
-getWeather = async ( e ) => {
-    e.preventDefault();
-    const location = e.target.elements.location.value;
-    const apiCall = await fetch(`https://www.metaweather.com/api/location/search/?query=${location}`);
-    const data = await apiCall.json();
-    var details = await fetch(`https://www.metaweather.com/api/location/${data[0].woeid}/`);
-     var result = await details.json()
+}*/
 
-     if (location){
-       console.log(details)
+
+getWeather = async ( location ) => {
+  try {
+
+    if(location === ''){
+      console.log("Location Not Entered");
+
       this.setState({
-        temp: result.consolidated_weather[0].the_temp,
-        weatherState: result.consolidated_weather[0].weather_state_name, 
-        humidity: result.consolidated_weather[0].humidity,
-        windDirection: result.consolidated_weather[0].wind_direction,
-        error : undefined
+        //loading: false,
+        temp : '', 
+        windDirection : '',
+        weatherState : '', 
+        humidity : 0, 
+        error: "Please Enter A Location"
       })
+      return
+    }
+    
+    var url = "https://www.metaweather.com/api/location";
 
-     }else{
-      this.setState({
-        temp: undefined,
-        weatherState: undefined, 
-        humidity: undefined,
-        windDirection: undefined,
-        error : "Please Enter a Location"
-      })
-       
-     }
 
+    const getLocation = await fetch(`${url}/search/?query=${location}`);
+    const locationData = await getLocation.json();
+    
+    var locationId = await fetch(`${url}/${locationData[0].woeid}/`);
+    var locationIdData = await locationId.json();
+
+    var tempValue = Math.round(locationIdData.consolidated_weather[0].the_temp).toString() + "C";
+    var weatherStateValue = locationIdData.consolidated_weather[0].weather_state_name +" "+ locationIdData.consolidated_weather[0].weather_state_abbr;
+    var windValue = Math.round(locationIdData.consolidated_weather[0].wind_direction).toString() +" "+ locationIdData.consolidated_weather[0].wind_direction_compass
+
+    this.setState({
+      temp: tempValue,
+      weatherState: weatherStateValue, 
+      humidity: locationIdData.consolidated_weather[0].humidity,
+      windDirection: windValue,
+      error : ''
+    })
+    
+  } catch (error) {
+      console.error("Error", error);
+  }
 
 }
 
@@ -51,21 +73,24 @@ getWeather = async ( e ) => {
   render() {
     return (
       <div className="App">
-        <div className = "wrapper">
-          <div className = "main">
-            <div className = "container">
-              <div className = "row">
-                <div className = "col-xs-5 title-container">
+        <div className="wrapper">
+          <div className="main">
+            <div className="container">
+              <div className="row">
+                <div className="col-xs-5 title-container">
                       <Title />
                 </div>
-                <div className = "col-xs-7 form-container"> 
-                <Form  getWeather={this.getWeather}/>
-  
+
+                <div className="col-xs-7 form-container"> 
+                  <Form onLoad={this.handleLoad} onGetWeather={this.getWeather}/>
+                  
                   <Weather 
                     temperature = {this.state.temp}
                     weatherState = {this.state.weatherState}
                     humidity = {this.state.humidity}
                     windDirection = {this.state.windDirection}
+                    error = {this.state.error}
+                    //loading = {this.state.loading}
                   />
                 </div>
 
