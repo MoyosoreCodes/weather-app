@@ -11,6 +11,7 @@ class App extends Component {
     windDirection : undefined,
     weatherState : undefined, 
     humidity : undefined, 
+    error: undefined
 }
 
 
@@ -22,12 +23,26 @@ getWeather = async ( e ) => {
     var details = await fetch(`https://www.metaweather.com/api/location/${data[0].woeid}/`);
      var result = await details.json()
 
+     if (location){
+       console.log(details)
       this.setState({
         temp: result.consolidated_weather[0].the_temp,
         weatherState: result.consolidated_weather[0].weather_state_name, 
         humidity: result.consolidated_weather[0].humidity,
-        windDirection: result.consolidated_weather[0].wind_direction
+        windDirection: result.consolidated_weather[0].wind_direction,
+        error : undefined
       })
+
+     }else{
+      this.setState({
+        temp: undefined,
+        weatherState: undefined, 
+        humidity: undefined,
+        windDirection: undefined,
+        error : "Please Enter a Location"
+      })
+       
+     }
 
 
 }
@@ -36,16 +51,32 @@ getWeather = async ( e ) => {
   render() {
     return (
       <div className="App">
-        <Title />
+        <div className = "wrapper">
+          <div className = "main">
+            <div className = "container">
+              <div className = "row">
+                <div className = "col-xs-5 title-container">
+                      <Title />
+                </div>
+                <div className = "col-xs-7 form-container"> 
+                <Form  getWeather={this.getWeather}/>
   
-        <Form  getWeather={this.getWeather}/>
+                  <Weather 
+                    temperature = {this.state.temp}
+                    weatherState = {this.state.weatherState}
+                    humidity = {this.state.humidity}
+                    windDirection = {this.state.windDirection}
+                  />
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
   
-        <Weather 
-          temperature = {this.state.temp}
-          weatherState = {this.state.weatherState}
-          humidity = {this.state.humidity}
-          windDirection = {this.state.windDirection}
-        />
+       
       </div>
     )
   }
