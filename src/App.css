@@ -104,6 +104,13 @@ button:active {
   letter-spacing: 2px;
 }
 
+.weather__value__label{
+  color: #fff;
+  font-weight: 200;
+  display: flex;
+  text-transform: uppercase;
+
+}
 .fa-spinner{
   color: #fff;
 }

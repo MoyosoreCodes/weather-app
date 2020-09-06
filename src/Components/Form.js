@@ -24,7 +24,7 @@ class Form extends Component {
         return (
             <div>
                 <form onSubmit = {this.childGetWeather}>
-                    <label className="weather__value">Please Enter a Location </label>
+                    <label className="weather__value__label">Please Enter a Location </label>
                     <input type="text" value={this.state.location} name="location" onChange={this.setValue}  placeholder="City..."/>
                     <button>Search</button>
                 </form>
