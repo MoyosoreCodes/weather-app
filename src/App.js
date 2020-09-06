@@ -15,14 +15,15 @@ class App extends Component {
     error: ''
 }
 
-/*handleLoad = (location) =>{
-  if (location != ''){
-    this.setState({
-      loading: true
-    })
-  }
-
-}*/
+ refresh = () => {
+   this.setState({
+    temp : '', 
+    windDirection : '',
+    weatherState : '', 
+    humidity : 0, 
+    error: ''
+   })
+ }
 
 
 getWeather = async ( location ) => {
@@ -41,6 +42,8 @@ getWeather = async ( location ) => {
       })
       return
     }
+
+    this.refresh();
     
     var url = "https://www.metaweather.com/api/location";
 
@@ -49,6 +52,7 @@ getWeather = async ( location ) => {
     const locationData = await getLocation.json();
     
     var locationId = await fetch(`${url}/${locationData[0].woeid}/`);
+    
     var locationIdData = await locationId.json();
 
     var tempValue = Math.round(locationIdData.consolidated_weather[0].the_temp).toString() + "C";
@@ -63,8 +67,18 @@ getWeather = async ( location ) => {
       error : ''
     })
     
-  } catch (error) {
-      console.error("Error", error);
+  } catch (errorMessage) {
+      console.error("Error", errorMessage);  
+      this.setState({
+        error : errorMessage.toString()
+      })
+
+      if (this.state.error === "TypeError: Cannot read property 'woeid' of undefined")
+      {
+        this.setState({
+          error: `We currently do not have any Information on ${location}`
+        })
+      }
   }
 
 }
@@ -78,11 +92,14 @@ getWeather = async ( location ) => {
             <div className="container">
               <div className="row">
                 <div className="col-xs-5 title-container">
-                      <Title />
+                  <Title />
                 </div>
 
                 <div className="col-xs-7 form-container"> 
-                  <Form onLoad={this.handleLoad} onGetWeather={this.getWeather}/>
+                  <Form 
+                  //onLoad={this.handleLoad} 
+                  onGetWeather={this.getWeather}
+                  />
                   
                   <Weather 
                     temperature = {this.state.temp}
